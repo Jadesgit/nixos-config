@@ -33,9 +33,10 @@ We have successfully broken out of a standard, single-machine `configuration.nix
 ---
 
 ## 🚀 3. What We Plan To Do (Next Milestones)
-Our next major initiative is constructing a headless, automated Home Server running NixOS, replacing manual Docker server maintenance with infrastructure-as-code.
+Our next major initiative is constructing a headless, automated Home Server running NixOS as the host OS (managed via our Git-tracked Nix Flake). We will run containers in standard, portable Docker Compose configurations to preserve industry portability (matching work environments) while leveraging Dockge and a Loki/Promtail/Grafana stack.
 
 ### Server Objectives:
-1.  **Declarative Containers:** Migrate raw `docker-compose.yml` stacks directly into native NixOS container declarations (`virtualisation.oci-containers` or declarative Docker configurations).
-2.  **Infrastructure Automation:** Ensure the entire server profile is managed via the same Git-tracked Flake pattern so a total hardware failure can be recovered in under 10 minutes.
-3.  **Storage & Networking Integration:** Incorporate automated network shares, automated firewalls, and secure remote infrastructure access utilizing our existing Tailscale mesh.
+1.  **NixOS Host with Docker & Compose:** Create a new `homeserver` profile in our Flake. Configure NixOS to manage OS-level items (Tailscale, NFS mounts, SSH keys) and enable standard Docker + `docker-compose` to run portable container stacks.
+2.  **Dockge Stack Management:** Deploy **Dockge** as the central controller to manage and edit all `docker-compose.yml` stacks (stored under `/home/jade/git/compose/`) via a clean web interface.
+3.  **Loki/Promtail/Grafana Logging Stack:** Implement a centralized logging and monitoring stack. Experiment with running Grafana, Loki, and Promtail to gather system and container logs, mirroring enterprise monitoring patterns.
+4.  **Tailscale & Network Storage:** Automate persistent mounting of our Synology NFS shares (`192.168.0.4:/volume1/data`) and ensure the server sits securely on the Tailscale mesh.
