@@ -1,0 +1,15 @@
+# Nix/NixOS temporary build outputs
+result
+result-*
+
+# Persistent history files created by nix-shell/nix develop (if you use direnv later)
+.direnv/
+
+# Common text editor swap and backup files
+*.swp
+*~
+.idea/
+.vscode/
+
+# Legacy backup configs you don't want to track anymore
+oldconfiguration.nix
