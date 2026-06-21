@@ -84,7 +84,7 @@
 
   # System Utilities
   environment.systemPackages = with pkgs; [
-    vim wget htop p7zip curl ntfs3g docker-compose gparted solaar
+    vim wget htop p7zip curl ntfs3g docker-compose gparted solaar pavucontrol
     kdePackages.kate kdePackages.yakuake kdePackages.filelight kdePackages.kcalc
   ];
 
