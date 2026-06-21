@@ -73,15 +73,14 @@
   # Experimental Features Enabled Natively
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
-}
 
- # Automation for system maintenance
+  # Automation for system maintenance (Now inside the braces! 🎉)
   nix = {
     gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 7d"; # Automatically wipes system generations older than a week
+      options = "--delete-older-than 7d"; 
     };
-    # Hard-links identical files in the store to save massive amounts of SSD space
     settings.auto-optimise-store = true; 
   };
+}
