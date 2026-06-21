@@ -24,6 +24,7 @@
 
   # Power management specialized for ThinkPads
   services.tlp.enable = true;
+  services.power-profiles-daemon.enable = false;
 
   # Hardware / Bluetooth
   hardware.bluetooth.enable = true;
