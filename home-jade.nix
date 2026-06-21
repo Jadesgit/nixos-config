@@ -17,7 +17,6 @@
     mpv
     libusb1
     widevine-cdm
-    latte-dock
   ];
 
   # Fully Declarative Git Config (Warning-free format)
