@@ -40,3 +40,4 @@ Our next major initiative is constructing a headless, automated Home Server runn
 2.  **Dockge Stack Management:** Deploy **Dockge** as the central controller to manage and edit all `docker-compose.yml` stacks (stored under `/home/jade/git/compose/`) via a clean web interface.
 3.  **Loki/Promtail/Grafana Logging Stack:** Implement a centralized logging and monitoring stack. Experiment with running Grafana, Loki, and Promtail to gather system and container logs, mirroring enterprise monitoring patterns.
 4.  **Tailscale & Network Storage:** Automate persistent mounting of our Synology NFS shares (`192.168.0.4:/volume1/data`) and ensure the server sits securely on the Tailscale mesh.
+5.  **Wildcard DNS & Privacy:** Use a wildcard DNS record (`*.jadeshomelab.website`) resolving to the internal proxy IP to keep the layout of individual services (Jellyfin, Sonarr, etc.) completely private and unexposed in public DNS query logs.
