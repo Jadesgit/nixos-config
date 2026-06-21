@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, antigravity-nix, ... }:
 
 {
   # Global System Settings
@@ -53,12 +53,16 @@
     extraGroups = [ "networkmanager" "wheel" "docker" ];
   };
 
-  # Shared System Packages & Flatpaks
+ # Shared System Packages & Flatpaks
   environment.systemPackages = with pkgs; [
     vim wget htop p7zip curl ntfs3g docker-compose gparted solaar pavucontrol
     kdePackages.kate kdePackages.yakuake kdePackages.filelight kdePackages.kcalc
-  ];
 
+    # 🌟 Updated from pkgs.system to stdenv.hostPlatform.system
+    antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default                 
+    antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity-ide  
+  ];
+  
   services.flatpak = {
     enable = true;
     packages = [
