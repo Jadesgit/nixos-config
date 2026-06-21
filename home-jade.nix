@@ -3,7 +3,7 @@
 {
   home.username = "jade";
   home.homeDirectory = "/home/jade";
-  home.stateVersion = "26.05"; # Home manager tracking version
+  home.stateVersion = "26.05";
 
   # User specific native packages (CLI & Dev runtimes)
   home.packages = with pkgs; [
@@ -16,20 +16,28 @@
     awscli
     mpv
     libusb1
+    widevine-cdm
+    latte-dock
   ];
 
-  # Fully Declarative Git Config (Your profile)
+  # Fully Declarative Git Config (Warning-free format)
   programs.git = {
     enable = true;
-    userName = "jadesgit";
-    userEmail = "jadepropix@gmail.com";
+    settings = {
+      user = {
+        name = "jadesgit";
+        email = "jadepropix@gmail.com";
+      };
+    };
   };
 
-  # Fully Declarative VS Code + Extensions
+  # Fully Declarative VS Code + Extensions (Warning-free format)
   programs.vscode = {
     enable = true;
-    extensions = with pkgs; [
-      vscode-extensions.hashicorp.terraform
-    ];
+    profiles.default = {
+      extensions = with pkgs; [
+        vscode-extensions.hashicorp.terraform
+      ];
+    };
   };
 }

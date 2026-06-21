@@ -52,7 +52,7 @@
 
   # Sound, Printing, Containers
   services.printing.enable = true;
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false; # Fixed 26.05 Warning
   security.rtkit.enable = true;
   services.pipewire = { alsa.enable = true; alsa.support32Bit = true; pulse.enable = true; };
   virtualisation.docker.enable = true;
@@ -60,7 +60,7 @@
   programs.kdeconnect.enable = true;
   services.openssh.enable = true;
 
-  # Single User Setup (Goodbye jaderdp!)
+  # User base definition
   users.users.jade = {
     isNormalUser = true;
     description = "jade";
@@ -81,9 +81,10 @@
       "md.obsidian.Obsidian"
       "com.bitwarden.desktop"
       "com.calibre_ebook.calibre"
+      "org.nicotine_plus.Nicotine"
     ];
   };
 
   nixpkgs.config.allowUnfree = true;
-  system.stateVersion = "23.05"; # Keep your original stateVersion!
+  system.stateVersion = "23.05";
 }
