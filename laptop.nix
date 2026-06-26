@@ -11,6 +11,7 @@
   boot.loader.efi.canTouchEfiVariables = true; # [cite: 98]
 
   networking.hostName = "jade-laptop";    # [cite: 98]
+  networking.networkmanager.enable = true; # Required for Wi-Fi to work on laptops!
 
   # Power management specialized for ThinkPads
   services.tlp.enable = true;             # [cite: 103]
