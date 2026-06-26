@@ -27,6 +27,9 @@
         name = "jadesgit";
         email = "jadepropix@gmail.com";
       };
+      credential = {
+        helper = "store";
+      };
     };
   };
 
