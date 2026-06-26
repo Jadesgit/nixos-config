@@ -38,6 +38,7 @@
   fileSystems."/data" = { 
     device = "192.168.0.4:/volume1/data";
     fsType = "nfs4";
+    options = [ "x-systemd.automount" "noauto" "x-systemd.idle-timeout=600" ];
   };
 
   system.stateVersion = "26.05";          # [cite: 120]
