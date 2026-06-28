@@ -40,6 +40,23 @@
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = { alsa.enable = true; alsa.support32Bit = true; pulse.enable = true; };
+
+  # Ensure NFS tools are installed for automounting support
+  boot.supportedFilesystems = [ "nfs" ];
+
+  # Shared NAS NFS Mount (Automounts on-demand when accessed)
+  fileSystems."/data" = { 
+    device = "192.168.0.4:/volume1/data";
+    fsType = "nfs4";
+    options = [ 
+      "x-systemd.automount" 
+      "noauto" 
+      "x-systemd.idle-timeout=600" 
+      "x-systemd.device-timeout=5s" 
+      "x-systemd.mount-timeout=5s" 
+      "x-gvfs-hide"
+    ];
+  };
   
   virtualisation.docker.enable = true;
   programs.dconf.enable = true;
