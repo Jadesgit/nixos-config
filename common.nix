@@ -28,6 +28,11 @@
   # Hardware / Audio / Desktop Environment Base
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
+  hardware.bluetooth.settings = {
+    General = {
+      ControllerMode = "bredr";
+    };
+  };
   hardware.logitech.wireless.enable = true;
   
   services.xserver.enable = true;
@@ -39,8 +44,24 @@
   services.printing.enable = true;
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
-  services.pipewire = { alsa.enable = true; alsa.support32Bit = true; pulse.enable = true; };
-
+  ###services.pipewire = { alsa.enable = true; alsa.support32Bit = true; pulse.enable = true; };
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    
+    # Dumb down Bluetooth for buggy firmware
+    wireplumber.extraConfig."11-bluetooth-tweaks" = {
+      "wireplumber.settings" = {
+        "bluetooth.autoswitch-to-headset-profile" = false;
+      };
+      "monitor.bluez.properties" = {
+        "bluez5.enable-hw-volume" = false;
+        "bluez5.roles" = [ "a2dp_sink" "a2dp_source" ];
+      };
+    };
+  };
   # Ensure NFS tools are installed for automounting support
   boot.supportedFilesystems = [ "nfs" ];
 
@@ -55,6 +76,11 @@
       "x-systemd.device-timeout=5s" 
       "x-systemd.mount-timeout=5s" 
       "x-gvfs-hide"
+
+      # 🛡️ The Kernel-Level Network Guardrails:
+      "soft"        # Fail and return an I/O error instead of blocking indefinitely
+      "timeo=14"    # Wait exactly 1.4 seconds before a retry (measured in tenths of a sec)
+      "retrans=2"   # Retry only twice before giving up completely
     ];
   };
   

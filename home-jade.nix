@@ -8,6 +8,7 @@
   # User specific native packages (CLI & Dev runtimes)
   home.packages = with pkgs; [
     firefox
+    chromium
     soundwireserver
     python314
     libvlc
