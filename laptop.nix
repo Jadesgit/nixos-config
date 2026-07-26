@@ -10,7 +10,7 @@
   boot.loader.systemd-boot.enable = true; # [cite: 98]
   boot.loader.efi.canTouchEfiVariables = true; # [cite: 98]
 
-  networking.hostName = "Locke";
+  networking.hostName = "locke";
   networking.networkmanager.enable = true; # Required for Wi-Fi to work on laptops!
 
   # Power management specialized for ThinkPads
