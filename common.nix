@@ -13,7 +13,13 @@
   };
 
   # Network & Security
-  services.tailscale.enable = true;
+  # DISABLED 2026-07-26 — nixpkgs ships tailscale 1.98.9 with a stale Go
+  # vendorHash, so its fixed-output derivation fails and takes the whole
+  # system build down with it:
+  #   specified: sha256-mbxLXR2TBgiwyVGfLmMR5xWk+0f66mPDas95Wla70Lk=
+  #   got:       sha256-Sd2iLJ7eDfDYdIRuW4xuiKgzhQWJWGAnz97FJWrVRlE=
+  # Not in use and low priority — re-enable once upstream corrects the hash.
+  # services.tailscale.enable = true;
   services.mullvad-vpn.enable = true;
   networking.hosts = { "192.168.0.3" = ["pi.hole"]; };
   
