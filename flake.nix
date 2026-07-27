@@ -31,6 +31,16 @@
         ];
       };
 
+      # 🐳 Docker host — VM on proxmox2. Headless, so no home-manager and no
+      # nix-flatpak: it imports modules/base.nix only, never the desktop stack.
+      umaro = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./umaro.nix
+          ./hardware-umaro.nix
+        ];
+      };
+
       # 💻 Laptop Target (Locke)
       locke = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
