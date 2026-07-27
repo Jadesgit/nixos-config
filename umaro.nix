@@ -34,11 +34,19 @@
     ];
   };
 
-  # CRITICAL: LinuxServer containers reach renderD128 by the *numeric* GID of
-  # the render group. Ubuntu used 109; NixOS would otherwise pick its own and
-  # hardware transcoding would silently fall back to CPU. Pin it so the compose
-  # files stay portable across both hosts during the migration.
-  users.groups.render.gid = 109;
+  # ⚠️ RENDER GID DIFFERS FROM UBUNTU — the Quick Sync trap.
+  # Containers that drop privileges reach /dev/dri/renderD128 via the *numeric*
+  # GID of the render group. On the old Ubuntu umaro that was 109; NixOS
+  # reserves 303 (nixos/modules/config/users-groups.nix), and pinning it to 109
+  # is a hard conflict that also risks colliding with another reserved ID.
+  #
+  # So the compose side must be parameterised instead:
+  #   .env            RENDER_GID=303
+  #   compose file     group_add: [ "${RENDER_GID}" ]
+  #
+  # Symptom if this is wrong: no error at all — transcoding silently falls back
+  # to CPU. Verify with `intel_gpu_top` during an actual transcode, not by
+  # checking that /dev/dri exists.
   users.users.jade.extraGroups = [ "render" "video" ];
 
   # ── NAS media ─────────────────────────────────────────────────────────────
