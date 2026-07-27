@@ -100,6 +100,18 @@
   environment.systemPackages = with pkgs; [
     vim wget htop p7zip curl ntfs3g docker-compose gparted solaar pavucontrol claude-code
     kdePackages.kate kdePackages.yakuake kdePackages.filelight kdePackages.kcalc
+
+    # Baseline diagnostic toolkit — shared by every host in the flake.
+    # NOTE: deliberately no `inetutils` — it collides with `nettools` over
+    # hostname/ifconfig and breaks the systemPackages build.
+    nettools        # ifconfig, netstat, route, arp
+    dnsutils        # dig, nslookup — the validation tool for the DNS migration
+    traceroute
+    nmap tcpdump ethtool iperf3
+    lsof tree jq ncdu iotop file unzip ripgrep
+    pciutils        # lspci
+    usbutils        # lsusb
+    smartmontools   # disk health
   ];
   
   services.flatpak = {
