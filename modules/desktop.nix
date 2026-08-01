@@ -48,6 +48,14 @@
   programs.dconf.enable = true;
   programs.kdeconnect.enable = true;
 
+  # Make GTK apps read desktop settings (fonts, theme, DPI) through the KDE
+  # xdg-desktop-portal instead of GTK's Wayland defaults. Without this,
+  # Firefox 153 on Plasma Wayland reads GTK's unset font DPI (-1) and computes
+  # a *negative* chrome font size — all UI text (tabs, urlbar, menus) becomes
+  # invisible while page content renders fine. Verified fix on terra 2026-07-31.
+  # Side benefit: GTK apps get native KDE file dialogs.
+  environment.sessionVariables.GTK_USE_PORTAL = "1";
+
   environment.systemPackages = with pkgs; [
     gparted solaar pavucontrol
     kdePackages.kate kdePackages.yakuake kdePackages.filelight kdePackages.kcalc
