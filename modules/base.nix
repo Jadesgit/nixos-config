@@ -30,6 +30,11 @@
   boot.supportedFilesystems = [ "nfs" ];
 
   virtualisation.docker.enable = true;
+  # NixOS defaults live-restore to true, which leaves containers running when
+  # docker.service stops — so at poweroff, systemd-shutdown hangs waiting on
+  # orphaned container processes ("Waiting for process: ... (sudo)" was the
+  # aerofoil container on terra). Off = daemon stops containers cleanly.
+  virtualisation.docker.liveRestore = false;
   services.openssh.enable = true;
 
   # Base User
