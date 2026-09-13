@@ -2,10 +2,9 @@
 
 # 🦄 Ellaptop — Dell Latitude 5501, converted from ChromeOS Flex.
 #
-# NOTE on hardware.nvidia: the 5501 ships with and without a discrete MX150.
-# Do not assume laptop.nix's (Locke's) PRIME block applies — check
-# `lspci | grep -i vga` during install and only add an nvidia section, with
-# this machine's own bus IDs, if a discrete GPU actually shows up.
+# Confirmed via `lspci | grep -i vga` during install (2026-09-13): this unit
+# is Intel UHD 630 (Coffee Lake) only, no discrete MX150 — unlike Locke, no
+# hardware.nvidia/PRIME block is needed here.
 
 {
   imports = [
