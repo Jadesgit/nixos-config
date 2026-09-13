@@ -57,8 +57,9 @@
   environment.sessionVariables.GTK_USE_PORTAL = "1";
 
   environment.systemPackages = with pkgs; [
-    gparted solaar pavucontrol
+    gparted solaar pavucontrol krename
     kdePackages.kate kdePackages.yakuake kdePackages.filelight kdePackages.kcalc
+    kdePackages.kclock kdePackages.isoimagewriter kdePackages.ksystemlog
   ];
 
   services.flatpak = {
