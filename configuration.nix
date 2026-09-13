@@ -1,9 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ 
-    ./hardware-configuration.nix 
-    ./common.nix 
+  imports = [
+    ./hardware-configuration.nix
+    ./common.nix
+    ./modules/desktop-admin-tools.nix
   ];
 
   boot.loader.grub.enable = true;

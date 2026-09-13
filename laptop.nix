@@ -1,9 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ 
+  imports = [
     ./hardware-laptop.nix                 # [cite: 97]
     ./common.nix                          # 🌟 Pulls in all the shared configurations instantly!
+    ./modules/desktop-admin-tools.nix
   ];
 
   # Bootloader setup for UEFI laptops

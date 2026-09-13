@@ -56,6 +56,21 @@
         ];
       };
 
+      # 🦄 Laptop Target (Ellaptop) — Dell 5501, kid machine
+      ellaptop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./ellaptop.nix
+          nix-flatpak.nixosModules.nix-flatpak
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.jade = import ./home-jade.nix;
+          }
+        ];
+      };
+
     };
   };
 }
