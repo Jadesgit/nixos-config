@@ -106,7 +106,13 @@ in
       exec = "firefox https://login.i-ready.com";
       icon = "firefox";
     })
-    # TODO: add a "Library" desktop item once we know the actual library
-    # system/card provider — don't want to guess the URL.
+    (makeDesktopItem {
+      name = "library";
+      desktopName = "Library";
+      # Utah's Online School Library (UEN) — the modern name for what Nebo
+      # School District still refers to as "Pioneer Library".
+      exec = "firefox https://onlinelibrary.uen.org/";
+      icon = "firefox";
+    })
   ];
 }
