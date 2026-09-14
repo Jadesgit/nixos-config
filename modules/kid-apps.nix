@@ -63,6 +63,7 @@ in
     # Web (Clever, iReady, library digital resources are all browser-based)
     firefox
     chromium
+    google-chrome
 
     # Retro emulation — NES through GameCube/Wii + handhelds. Covers most of
     # the mainline Zelda catalog: LoZ/Zelda II (NES, fceumm), A Link to the
