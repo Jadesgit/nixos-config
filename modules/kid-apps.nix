@@ -59,7 +59,20 @@ in
   systemd.tmpfiles.rules =
     [ "d ${romsDir} 0755 ella users -" ]
     ++ map (s: "d ${romsDir}/${s.name} 0755 ella users -") emuSystems
-    ++ map (s: "C ${romsDir}/${s.name}/metadata.pegasus.txt 0644 ella users - ${emuMetaFile s}") emuSystems;
+    ++ map (s: "C ${romsDir}/${s.name}/metadata.pegasus.txt 0644 ella users - ${emuMetaFile s}") emuSystems
+    ++ [
+      # ella auto-logs in, so SDDM never passes a real password through PAM
+      # for kwallet-pam to auto-unlock the wallet with — it ends up locked
+      # and prompts on first use (e.g. saving a wifi password). Disable it
+      # outright rather than fight that; nothing on this account needs
+      # wallet-grade secret storage. copy-if-missing, so a manual re-enable
+      # via System Settings survives future rebuilds.
+      "d /home/ella/.config 0755 ella users -"
+      "C /home/ella/.config/kwalletrc 0644 ella users - ${pkgs.writeText "kwalletrc" ''
+        [Wallet]
+        Enabled=false
+      ''}"
+    ];
 
   environment.systemPackages = with pkgs; [
     # Creative / educational
