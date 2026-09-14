@@ -49,6 +49,13 @@ in
   # clobber it.
   environment.etc."xdg/pegasus-frontend/game_dirs.txt".text = "${romsDir}\n";
 
+  # Single organized "click here for everything" page instead of ~100
+  # individual desktop icons — the full Nebo School District educational
+  # resource list plus the Spanish Fork library card resources, filtered to
+  # what she'd actually click herself (teacher-only tools like quiz-creation
+  # dashboards and staff docs are left off).
+  environment.etc."ellaptop/learning-resources.html".source = ./assets/learning-resources.html;
+
   systemd.tmpfiles.rules =
     [ "d ${romsDir} 0755 ella users -" ]
     ++ map (s: "d ${romsDir}/${s.name} 0755 ella users -") emuSystems
@@ -94,6 +101,13 @@ in
     hydrogen
     qjackctl
 
+    (makeDesktopItem {
+      name = "learning-resources";
+      desktopName = "Learning Resources";
+      comment = "All of Nebo School District's approved links + the library, organized in one page";
+      exec = "firefox /etc/ellaptop/learning-resources.html";
+      icon = "firefox";
+    })
     (makeDesktopItem {
       name = "clever";
       desktopName = "Clever";
