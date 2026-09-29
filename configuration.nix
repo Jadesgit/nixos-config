@@ -12,6 +12,16 @@
   boot.loader.grub.useOSProber = true;
 
   networking.hostName = "terra";
+
+  # Terra had only ever used plain DHCP (hardware-configuration.nix), never
+  # NetworkManager — so there was no nm-applet/plasma-nm backend for the
+  # system tray widget to attach to (it just doesn't offer the widget at
+  # all without the service running), and no GUI way to set a static IP
+  # during an outage. Fixes the "networking GUI unusable when the network
+  # dies" issue reported 2026-08-21. Overrides hardware-configuration.nix's
+  # `networking.useDHCP = lib.mkDefault true` cleanly since that's a default.
+  networking.networkmanager.enable = true;
+
   system.stateVersion = "23.05";
 
   # WirePlumber configuration to persist "Pro Audio" profiles on desktop audio cards
