@@ -5,7 +5,16 @@
     ./hardware-laptop.nix                 # [cite: 97]
     ./common.nix                          # 🌟 Pulls in all the shared configurations instantly!
     ./modules/desktop-admin-tools.nix
+    ./modules/emulation.nix
   ];
+
+  # Same RetroArch/Dolphin/Pegasus suite as ellaptop (see modules/emulation.nix)
+  # — locke's discrete MX150 handles GameCube/Wii (Dolphin) much better than
+  # ellaptop's Intel UHD 630 can.
+  emulation = {
+    enable = true;
+    user = "jade";
+  };
 
   # Bootloader setup for UEFI laptops
   boot.loader.systemd-boot.enable = true; # [cite: 98]
