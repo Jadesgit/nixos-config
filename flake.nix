@@ -41,6 +41,13 @@
         ];
       };
 
+      # 🎖️ General Leo — small infra VM on proxmox2 (ntfy, Uptime Kuma, UniFi).
+      # Built as a Proxmox VMA: nix build .#nixosConfigurations.leo.config.system.build.VMA
+      leo = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [ ./leo.nix ];
+      };
+
       # 💻 Laptop Target (Locke)
       locke = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
