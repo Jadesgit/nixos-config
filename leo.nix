@@ -41,6 +41,7 @@
     qemuExtraConf = {
       onboot = 1;
       startup = "order=2";   # after Technitium (order=1)
+      cpu = "host";          # default kvm64 hides AVX; MongoDB >=5 (UniFi) will not start without it
     };
     cloudInit.enable = false;   # network + keys are declared above, not injected
   };
