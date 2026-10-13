@@ -5,6 +5,7 @@
     ./hardware-configuration.nix
     ./common.nix
     ./modules/desktop-admin-tools.nix
+    ./modules/clamscan.nix
   ];
 
   boot.loader.grub.enable = true;
@@ -21,6 +22,12 @@
   # dies" issue reported 2026-08-21. Overrides hardware-configuration.nix's
   # `networking.useDHCP = lib.mkDefault true` cleanly since that's a default.
   networking.networkmanager.enable = true;
+
+  # Weekly AV sweep of the Plex library; NAS is mounted on demand at /data.
+  homelab.clamscan = {
+    enable = true;
+    paths = [ "/home/jade/Downloads" "/data/plex" ];
+  };
 
   system.stateVersion = "23.05";
 
