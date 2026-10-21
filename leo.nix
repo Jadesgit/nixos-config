@@ -4,7 +4,8 @@
 # "super soldier" version of the old soldier Umaro.
 #
 # Holds the services that must survive Umaro / the old Proxmox node dying:
-# ntfy first, then Uptime Kuma, then the UniFi controller. NOT a media host.
+# ntfy first, then Uptime Kuma, then the UniFi controller. NOT a media host:
+# slskr runs here but writes straight to the NAS (/data), never the 32G disk.
 # Built as a Proxmox VMA image (nixos-rebuild-free first boot), see
 # proxmox repo `group_vars/all.yml` for the guest spec.
 
@@ -12,6 +13,7 @@
   imports = [
     (modulesPath + "/virtualisation/proxmox-image.nix")
     ./modules/base.nix
+    ./modules/nas-data.nix   # NAS NFS export at /data, same path as terra
   ];
 
   networking.hostName = "leo";
@@ -63,11 +65,10 @@
 
   # ── Ports for the services that will land here ────────────────────────────
   # (Docker-published ports bypass this firewall anyway; listed for honesty.)
-  networking.firewall.allowedTCPPorts = lib.mkAfter [ 8090 3001 8443 8080 ];
+  networking.firewall.allowedTCPPorts = lib.mkAfter [ 8090 3001 8443 8080 5030 2240 ];  # slskr UI + peer port
   networking.firewall.allowedUDPPorts = lib.mkAfter [ 3478 10001 ];
 
   virtualisation.docker.autoPrune = { enable = true; dates = "weekly"; };
-  environment.systemPackages = with pkgs; [ git ];
 
   system.stateVersion = "26.05";
 }

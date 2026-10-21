@@ -20,7 +20,7 @@
 
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 80 443 2234 9000 8096 21115 21116 21117 21118 21119 ];
+    allowedTCPPorts = [ 80 443 9000 8096 21115 21116 21117 21118 21119 ];
     allowedUDPPorts = [ 59010 59011 9000 21116 19132 ];
     allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
     allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
@@ -58,6 +58,13 @@
     pciutils        # lspci
     usbutils        # lsusb
     smartmontools   # disk health
+
+    # Baseline scripting/admin kit — so headless boxes (leo) can generate
+    # secrets, build JSON, and poke service DBs without a nix-shell detour.
+    openssl         # rand -hex for compose .env secrets, s_client for TLS checks
+    python3         # stdlib only: json/csv glue, http.server
+    git rsync tmux
+    sqlite          # inspect kuma/slskr/ntfy state DBs
   ];
 
   # Experimental Features Enabled Natively

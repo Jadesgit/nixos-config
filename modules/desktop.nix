@@ -60,10 +60,7 @@
     solaar pavucontrol
     kdePackages.kate kdePackages.yakuake kdePackages.filelight kdePackages.kcalc
     kdePackages.kclock
-    # Native package instead of the org.nicotine_plus.Nicotine flatpak —
-    # same app, but avoids pulling in the whole org.gnome.Platform Flatpak
-    # runtime as a dependency just for this one GTK app.
-    nicotine-plus
+    # Soulseek moved off the desktops to slskr on leo (compose/slskr).
   ];
 
   services.flatpak = {
