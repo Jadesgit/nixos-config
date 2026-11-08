@@ -11,9 +11,13 @@
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+
+    # Per-model hardware quirks (CPU/GPU/SSD/ThinkPad defaults). Used by locke.
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-flatpak, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nix-flatpak, nixos-hardware, ... }@inputs: {
     nixosConfigurations = {
 
       # 🖥️ Desktop Target (Terra)
@@ -53,6 +57,9 @@
         system = "x86_64-linux";
         modules = [
           ./laptop.nix
+          # No T580 profile upstream; the T480 is the same generation (8th-gen
+          # Kaby Lake-R, optional MX150, same Lenovo PROCHOT throttling bug).
+          nixos-hardware.nixosModules.lenovo-thinkpad-t480
           nix-flatpak.nixosModules.nix-flatpak
           home-manager.nixosModules.home-manager
           {

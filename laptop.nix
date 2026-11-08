@@ -23,27 +23,35 @@
   networking.hostName = "locke";
   networking.networkmanager.enable = true; # Required for Wi-Fi to work on laptops!
 
-  # Power management specialized for ThinkPads
-  services.tlp.enable = true;             # [cite: 103]
-  services.power-profiles-daemon.enable = false; # Prevents the CPU governor conflict
-
-  # Enable the NVIDIA drivers
-  services.xserver.videoDrivers = [ "nvidia" ]; # [cite: 107]
-  hardware.graphics.enable = true;        # [cite: 107]
-  hardware.nvidia = {
-    modesetting.enable = true;             # [cite: 108]
-    powerManagement.enable = true;         # [cite: 108]
-    open = false;                         # MUST BE FALSE for the MX150 Pascal card [cite: 108, 109]
-    nvidiaSettings = true;                 # [cite: 109]
-    prime = {                             # [cite: 110]
-      offload = {                         # [cite: 110]
-        enable = true;                    # [cite: 110]
-        enableOffloadCmd = true;          # [cite: 111]
-      };
-      intelBusId = "PCI:0:2:0";           # [cite: 111]
-      nvidiaBusId = "PCI:2:0:0";          # [cite: 111]
+  # --- Power (TLP; power-profiles-daemon would fight it over the governor) ---
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+      CPU_BOOST_ON_BAT = 0;
+      PLATFORM_PROFILE_ON_BAT = "low-power";
+      # Battery longevity: the T580 can hold charge between thresholds.
+      # Before a trip: `sudo tlp fullcharge` charges to 100% once.
+      START_CHARGE_THRESH_BAT0 = 75;
+      STOP_CHARGE_THRESH_BAT0 = 80;
+      START_CHARGE_THRESH_BAT1 = 75;   # the optional external (rear) battery
+      STOP_CHARGE_THRESH_BAT1 = 80;
+      # Keep the Wi-Fi from dozing off on battery (causes lag/drops on Intel cards).
+      WIFI_PWR_ON_BAT = "off";
     };
   };
+  services.power-profiles-daemon.enable = false;
+
+  # Compressed swap in RAM first; the disk swap partition stays as a fallback.
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;
+  };
+
+  # GPU config lives in hardware-laptop.nix.
 
   system.stateVersion = "26.05";          # [cite: 120]
 }
