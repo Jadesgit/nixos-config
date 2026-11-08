@@ -64,7 +64,22 @@ in
       };
     };
 
-    # Mount the library before the container starts (triggers the automount).
-    systemd.services.docker-tdarr-node.unitConfig.RequiresMountsFor = [ "/srv/tdarr-media" ];
+    # Wait for the library mount before starting the container. Not
+    # RequiresMountsFor: locke boots without NetworkManager-wait-online, so at
+    # boot the NFS mount fails once and a hard dependency would fail the node
+    # for good ("Dependency failed", seen 2026-11-08). Poking the automount in
+    # a retry loop just waits for Wi-Fi/Ethernet instead.
+    systemd.services.docker-tdarr-node.preStart = lib.mkBefore ''
+      for i in $(seq 1 60); do
+        ${pkgs.util-linux}/bin/mountpoint -q /srv/tdarr-media && ls /srv/tdarr-media/ >/dev/null 2>&1 && break
+        ls /srv/tdarr-media/ >/dev/null 2>&1 || true
+        sleep 5
+      done
+      ${pkgs.util-linux}/bin/mountpoint -q /srv/tdarr-media || { echo "NAS library not mounted after 5 min"; exit 1; }
+    '';
+    systemd.services.docker-tdarr-node.serviceConfig = {
+      Restart = lib.mkForce "always";
+      RestartSec = lib.mkForce "60s";
+    };
   };
 }

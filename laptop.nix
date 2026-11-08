@@ -24,6 +24,20 @@
   networking.hostName = "locke";
   networking.networkmanager.enable = true; # Required for Wi-Fi to work on laptops!
 
+  # Docked = one LAN address. With the dock's Ethernet (.94) AND Wi-Fi (.28) both
+  # up on 192.168.0.0/24, SoundWire Server advertised the wrong IP (2026-11-08).
+  # Wi-Fi goes off while any wired link is up and comes back when it drops.
+  networking.networkmanager.dispatcherScripts = [{
+    type = "basic";
+    source = pkgs.writeText "wifi-off-when-wired" ''
+      case "$1" in en*|eth*) ;; *) exit 0 ;; esac
+      case "$2" in
+        up)   ${pkgs.networkmanager}/bin/nmcli radio wifi off ;;
+        down) ${pkgs.networkmanager}/bin/nmcli radio wifi on ;;
+      esac
+    '';
+  }];
+
   # --- Power (TLP; power-profiles-daemon would fight it over the governor) ---
   services.tlp = {
     enable = true;
