@@ -23,11 +23,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # No idle timeout: work happens inside the container, so the host sees the
+    # mount as idle and would unmount it (and stop the node) mid-encode.
     fileSystems."/srv/tdarr-media" = {
       device = "192.168.0.4:/volume1/data/plex";
       fsType = "nfs4";
       options = [ "hard" "noatime" "x-systemd.automount" "noauto" "nofail"
-                  "x-systemd.idle-timeout=600" "x-systemd.mount-timeout=30s" ];
+                  "x-systemd.mount-timeout=30s" ];
     };
 
     systemd.tmpfiles.rules = [
