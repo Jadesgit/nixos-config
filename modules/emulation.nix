@@ -14,19 +14,64 @@ let
   # instead of RetroArch's raw menu. Launch commands use each core's own
   # standalone `retroarch-<core>` wrapper binary (pkgs.libretro.<x>.meta.mainProgram
   # — verified per-core, not guessed) rather than hand-built `-L core.so` invocations.
+  # --- Gamepad profiles ------------------------------------------------------
+  # The iNNEXT SNES-style USB pad is a generic DragonRise chip (0079:0011,
+  # name "USB Gamepad "). Four stock RetroArch profiles claim that same id, and
+  # RetroArch picked "Retrolink Sega Saturn": Start on the pad's Select, no
+  # Select at all, A/B and L/R swapped (Zelda's title/name screen unusable,
+  # locke 2026-11-08). So: the stock profile set minus every profile claiming
+  # 0079:0011, plus one measured from the real pad (evdev button indices:
+  # X=0 A=1 B=2 Y=3 L=4 R=5 Select=8 Start=9, D-pad = axes 0/1).
+  innextProfile = pkgs.writeText "iNNEXT-SNES-USB-Gamepad.cfg" ''
+    input_driver = "udev"
+    input_device = "USB Gamepad "
+    input_device_display_name = "iNNEXT SNES-style USB Gamepad"
+    input_vendor_id = "121"
+    input_product_id = "17"
+    input_x_btn = "0"
+    input_a_btn = "1"
+    input_b_btn = "2"
+    input_y_btn = "3"
+    input_l_btn = "4"
+    input_r_btn = "5"
+    input_select_btn = "8"
+    input_start_btn = "9"
+    input_up_axis = "-1"
+    input_down_axis = "+1"
+    input_left_axis = "-0"
+    input_right_axis = "+0"
+  '';
+  autoconfigDir = pkgs.runCommand "retroarch-autoconfig-local" { } ''
+    cp -r ${pkgs.retroarch-joypad-autoconfig}/share/libretro/autoconfig $out
+    chmod -R u+w $out
+    for f in $out/udev/*.cfg; do
+      if grep -q '^input_vendor_id = "121"' "$f" && grep -q '^input_product_id = "17"' "$f"; then
+        rm "$f"
+      fi
+    done
+    cp ${innextProfile} $out/udev/iNNEXT-SNES-USB-Gamepad.cfg
+  '';
+  # Appended to every RetroArch launch from Pegasus. Start+Select opens the
+  # RetroArch menu (save states, Quit) — there is no keyboard on the couch.
+  raExtraCfg = pkgs.writeText "retroarch-emulation.cfg" ''
+    joypad_autoconfig_dir = "${autoconfigDir}"
+    input_menu_toggle_gamepad_combo = "4"
+  '';
+  ra = core: bin: "${core}/bin/${bin} --appendconfig ${raExtraCfg} \"{file.path}\"";
+
   emuSystems = [
     { name = "nes";  title = "Nintendo Entertainment System"; exts = "nes, NES, zip";
-      launch = "${pkgs.libretro.fceumm}/bin/retroarch-fceumm \"{file.path}\""; }
+      launch = ra pkgs.libretro.fceumm "retroarch-fceumm"; }
     { name = "snes"; title = "Super Nintendo Entertainment System"; exts = "smc, sfc, zip";
-      launch = "${pkgs.libretro.snes9x}/bin/retroarch-snes9x \"{file.path}\""; }
+      launch = ra pkgs.libretro.snes9x "retroarch-snes9x"; }
     { name = "n64";  title = "Nintendo 64"; exts = "n64, z64, zip";
-      launch = "${pkgs.libretro.mupen64plus}/bin/retroarch-mupen64plus-next \"{file.path}\""; }
+      launch = ra pkgs.libretro.mupen64plus "retroarch-mupen64plus-next"; }
     { name = "gbc";  title = "Game Boy Color"; exts = "gb, gbc, zip";
-      launch = "${pkgs.libretro.gambatte}/bin/retroarch-gambatte \"{file.path}\""; }
+      launch = ra pkgs.libretro.gambatte "retroarch-gambatte"; }
     { name = "gba";  title = "Game Boy Advance"; exts = "gba, zip";
-      launch = "${pkgs.libretro.mgba}/bin/retroarch-mgba \"{file.path}\""; }
+      launch = ra pkgs.libretro.mgba "retroarch-mgba"; }
     { name = "nds";  title = "Nintendo DS"; exts = "nds, zip";
-      launch = "${pkgs.libretro.melonds}/bin/retroarch-melonds \"{file.path}\""; }
+      launch = ra pkgs.libretro.melonds "retroarch-melonds"; }
     { name = "gc";   title = "GameCube / Wii"; exts = "iso, rvz, gcm, wbfs";
       # dolphin-emu: -b/--batch exits Dolphin when emulation ends, -e/--exec
       # loads the given file — standard, long-stable Dolphin CLI syntax.
@@ -88,7 +133,10 @@ in
       [ "d ${builtins.dirOf cfg.romsDir} 0755 ${cfg.user} users -"
         "d ${cfg.romsDir} 0755 ${cfg.user} users -" ]
       ++ map (s: "d ${cfg.romsDir}/${s.name} 0755 ${cfg.user} users -") emuSystems
-      ++ map (s: "C ${cfg.romsDir}/${s.name}/metadata.pegasus.txt 0644 ${cfg.user} users - ${emuMetaFile s}") emuSystems
+      # L+ (symlink, replaced each switch), not C: the launch lines hold /nix/store
+      # paths, so a copied file went stale on every update (and its paths could
+      # be garbage-collected). Pegasus finds games by extension; nothing to hand-edit.
+      ++ map (s: "L+ ${cfg.romsDir}/${s.name}/metadata.pegasus.txt - - - - ${emuMetaFile s}") emuSystems
       ++ [ "d /home/${cfg.user}/.config 0755 ${cfg.user} users -"
            "d /home/${cfg.user}/.config/pegasus-frontend 0755 ${cfg.user} users -"
            "C /home/${cfg.user}/.config/pegasus-frontend/game_dirs.txt 0644 ${cfg.user} users - ${pkgs.writeText "pegasus-game-dirs.txt" gameDirs}" ];
