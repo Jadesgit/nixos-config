@@ -33,6 +33,8 @@ let
       launch = "${pkgs.dolphin-emu}/bin/dolphin-emu -b -e \"{file.path}\""; }
   ];
 
+  gameDirs = lib.concatMapStrings (s: "${cfg.romsDir}/${s.name}\n") emuSystems;
+
   emuMetaFile = s: pkgs.writeText "metadata-${s.name}.pegasus.txt" ''
     collection: ${s.title}
     shortname: ${s.name}
@@ -74,7 +76,9 @@ in
     # Pegasus only reads ~/.config/pegasus-frontend/game_dirs.txt — the /etc/xdg
     # copy was never picked up ("No metadata files found", locke 2026-11-08) —
     # so the per-user file is seeded too (C = only if missing; hand edits stay).
-    environment.etc."xdg/pegasus-frontend/game_dirs.txt".text = "${cfg.romsDir}\n";
+    # Pegasus does NOT recurse: each listed dir must hold a metadata file, so
+    # list every system folder, not the roms root.
+    environment.etc."xdg/pegasus-frontend/game_dirs.txt".text = gameDirs;
 
     # The parent (~/Games) is listed first: otherwise tmpfiles creates it
     # implicitly as root:root, and then refuses to fix ownership below it
@@ -87,6 +91,6 @@ in
       ++ map (s: "C ${cfg.romsDir}/${s.name}/metadata.pegasus.txt 0644 ${cfg.user} users - ${emuMetaFile s}") emuSystems
       ++ [ "d /home/${cfg.user}/.config 0755 ${cfg.user} users -"
            "d /home/${cfg.user}/.config/pegasus-frontend 0755 ${cfg.user} users -"
-           "C /home/${cfg.user}/.config/pegasus-frontend/game_dirs.txt 0644 ${cfg.user} users - ${pkgs.writeText "pegasus-game-dirs.txt" "${cfg.romsDir}\n"}" ];
+           "C /home/${cfg.user}/.config/pegasus-frontend/game_dirs.txt 0644 ${cfg.user} users - ${pkgs.writeText "pegasus-game-dirs.txt" gameDirs}" ];
   };
 }
