@@ -15,7 +15,7 @@ let
   # standalone `retroarch-<core>` wrapper binary (pkgs.libretro.<x>.meta.mainProgram
   # — verified per-core, not guessed) rather than hand-built `-L core.so` invocations.
   emuSystems = [
-    { name = "nes";  title = "Nintendo Entertainment System"; exts = "nes, zip";
+    { name = "nes";  title = "Nintendo Entertainment System"; exts = "nes, NES, zip";
       launch = "${pkgs.libretro.fceumm}/bin/retroarch-fceumm \"{file.path}\""; }
     { name = "snes"; title = "Super Nintendo Entertainment System"; exts = "smc, sfc, zip";
       launch = "${pkgs.libretro.snes9x}/bin/retroarch-snes9x \"{file.path}\""; }
@@ -71,6 +71,9 @@ in
     # the ROM folder tree with a starter metadata.pegasus.txt per system. Uses
     # tmpfiles `C` (copy-if-missing) rather than `C+`, so once a real
     # metadata file is hand-edited to add real games, a rebuild won't clobber it.
+    # Pegasus only reads ~/.config/pegasus-frontend/game_dirs.txt — the /etc/xdg
+    # copy was never picked up ("No metadata files found", locke 2026-11-08) —
+    # so the per-user file is seeded too (C = only if missing; hand edits stay).
     environment.etc."xdg/pegasus-frontend/game_dirs.txt".text = "${cfg.romsDir}\n";
 
     # The parent (~/Games) is listed first: otherwise tmpfiles creates it
@@ -81,6 +84,9 @@ in
       [ "d ${builtins.dirOf cfg.romsDir} 0755 ${cfg.user} users -"
         "d ${cfg.romsDir} 0755 ${cfg.user} users -" ]
       ++ map (s: "d ${cfg.romsDir}/${s.name} 0755 ${cfg.user} users -") emuSystems
-      ++ map (s: "C ${cfg.romsDir}/${s.name}/metadata.pegasus.txt 0644 ${cfg.user} users - ${emuMetaFile s}") emuSystems;
+      ++ map (s: "C ${cfg.romsDir}/${s.name}/metadata.pegasus.txt 0644 ${cfg.user} users - ${emuMetaFile s}") emuSystems
+      ++ [ "d /home/${cfg.user}/.config 0755 ${cfg.user} users -"
+           "d /home/${cfg.user}/.config/pegasus-frontend 0755 ${cfg.user} users -"
+           "C /home/${cfg.user}/.config/pegasus-frontend/game_dirs.txt 0644 ${cfg.user} users - ${pkgs.writeText "pegasus-game-dirs.txt" "${cfg.romsDir}\n"}" ];
   };
 }
