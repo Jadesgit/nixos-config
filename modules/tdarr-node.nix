@@ -32,10 +32,14 @@ in
                   "x-systemd.mount-timeout=30s" ];
     };
 
+    # Owned by the container's PUID/PGID (jade:users). With root here, every
+    # nixos-rebuild switch reset the cache dir to root and the node then failed
+    # each job with "Unable to create work directory ... Permission denied"
+    # (56 errors after the 2026-11-08 17:24 switch).
     systemd.tmpfiles.rules = [
-      "d /var/lib/tdarr-node/configs 0755 root root -"
-      "d /var/lib/tdarr-node/logs 0755 root root -"
-      "d /var/lib/tdarr-node/cache 0755 root root -"   # remux scratch space, local NVMe
+      "d /var/lib/tdarr-node/configs 0755 jade users -"
+      "d /var/lib/tdarr-node/logs 0755 jade users -"
+      "d /var/lib/tdarr-node/cache 0755 jade users -"   # transcode scratch space, local NVMe
     ];
 
     virtualisation.oci-containers = {
