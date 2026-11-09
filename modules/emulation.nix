@@ -73,8 +73,13 @@ in
     # metadata file is hand-edited to add real games, a rebuild won't clobber it.
     environment.etc."xdg/pegasus-frontend/game_dirs.txt".text = "${cfg.romsDir}\n";
 
+    # The parent (~/Games) is listed first: otherwise tmpfiles creates it
+    # implicitly as root:root, and then refuses to fix ownership below it
+    # (an "unsafe path transition" from a user dir into a root one). Seen on
+    # locke 2026-11-08: ~/Games and the whole roms tree ended up root-owned.
     systemd.tmpfiles.rules =
-      [ "d ${cfg.romsDir} 0755 ${cfg.user} users -" ]
+      [ "d ${builtins.dirOf cfg.romsDir} 0755 ${cfg.user} users -"
+        "d ${cfg.romsDir} 0755 ${cfg.user} users -" ]
       ++ map (s: "d ${cfg.romsDir}/${s.name} 0755 ${cfg.user} users -") emuSystems
       ++ map (s: "C ${cfg.romsDir}/${s.name}/metadata.pegasus.txt 0644 ${cfg.user} users - ${emuMetaFile s}") emuSystems;
   };

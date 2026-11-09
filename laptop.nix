@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
@@ -16,6 +16,38 @@
     enable = true;
     user = "jade";
   };
+
+  # Run AppImages directly (binfmt hands them to appimage-run, which supplies
+  # the FHS libraries they expect).
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
+
+  # Majora's Mask PC port (2Ship2Harkinian) — the user's own AppImage build,
+  # NOT nixpkgs' _2ship2harkinian: the MM Reloaded HD pack and the generated
+  # mm.o2r are tied to the 2Ship version, so the game stays on this build.
+  # SHIP_HOME = the game folder: mm.o2r and the ROM live there, mods in mods/,
+  # saves and settings land there too (one folder to back up).
+  environment.systemPackages =
+    let
+      mmDir = "/home/jade/Games/The Legend of Zelda: Majora's Mask - ship of harkanian";
+      majorasMask = pkgs.writeShellScriptBin "majoras-mask" ''
+        export SHIP_HOME=${lib.escapeShellArg mmDir}
+        cd "$SHIP_HOME"
+        exec ${pkgs.appimage-run}/bin/appimage-run "$SHIP_HOME/2ship.appimage" "$@"
+      '';
+    in [
+      majorasMask
+      (pkgs.makeDesktopItem {
+        name = "majoras-mask";
+        desktopName = "The Legend of Zelda: Majora's Mask";
+        genericName = "2Ship2Harkinian";
+        exec = "${majorasMask}/bin/majoras-mask";
+        icon = "${pkgs._2ship2harkinian.src}/mm/linux/2s2hIcon.png";
+        categories = [ "Game" ];
+      })
+    ];
 
   # Bootloader setup for UEFI laptops
   boot.loader.systemd-boot.enable = true; # [cite: 98]
